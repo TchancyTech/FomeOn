@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FomeOn</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="logo-wrap">
+          <div class="logo-icon">
+            <img
+              src="assets/logo/logo.png.jpeg"
+              alt="FomeOn logo"
+              loading="lazy"
+            />
+          </div>
+          <div>
+            <h1 class="logo">FomeOn</h1>
+            <p class="tagline">Delivery rápido</p>
+          </div>
+        </div>
+
+        <nav class="menu">
+          <a href="#">Inicio</a>
+          <a href="#restaurants">Restaurantes</a>
+          <a href="#offers">Ofertas</a>
+          <a href="#">Club FomeOn 👑</a>
+        </nav>
+
+        <button class="login-btn">entrar</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <span class="badge">Entrega grátis na primeira compra!</span>
+            <h2>
+              <span class="orange">A fome manda,</span><br />
+              <span class="white">a gente entrega.</span>
+            </h2>
+            <p>
+              Peça dos melhores restaurantes da sua região e receba em minutos.
+              Sabor e qualidade garantidos!
+            </p>
+
+            <form id="search-form" class="search-wrap">
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Busque por restaurante ou prato..."
+                aria-label="Buscar restaurante ou prato"
+              />
+              <button type="submit">Buscar</button>
+            </form>
+          </div>
+
+          <div class="food-circles" aria-hidden="true">
+            <div class="food-item">
+              <img src="https://cdn.pixabay.com/photo/2022/08/31/10/17/burger-7422970_1280.jpg" alt="Burger" loading="lazy" />
+            </div>
+            <div class="food-item">
+              <img src="https://tse1.explicit.bing.net/th/id/OIP.sZKsa9IRThgsEeplTjKaSwHaLH?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Pasta" loading="lazy" />
+            </div>
+            <div class="food-item">
+              <img src="https://img.freepik.com/premium-photo/gourmet-fresh-seafood-plate-sashimi-nigiri-maki-sushi-generated-by-ai_188544-13434.jpg?w=740" alt="Sushi" loading="lazy" />
+            </div>
+            <div class="food-item">
+              <img src="https://simple-veganista.com/wp-content/uploads/2020/03/best-house-salad-recipe_5-360x360.jpg" alt="Salad" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="offers" class="section-light">
+        <div class="container">
+          <h3>Ofertas do dia</h3>
+          <div id="offers-list" class="offers-list"></div>
+        </div>
+      </section>
+
+      <section id="restaurants" class="section-light">
+        <div class="container">
+          <div class="section-head">
+            <h3>Restaurantes</h3>
+            <select id="sort-select" aria-label="Ordenar restaurantes">
+              <option value="">Ordenar</option>
+              <option value="rating_desc">Melhor avaliados</option>
+              <option value="delivery_fee_asc">Menor taxa de entrega</option>
+            </select>
+          </div>
+          <div id="restaurants-list" class="cards-grid"></div>
+        </div>
+      </section>
+
+      <section id="details" class="section-light">
+        <div class="container details-grid">
+          <article class="panel">
+            <h3>Detalhes do restaurante</h3>
+            <div id="restaurant-details" class="empty">
+              Escolha um restaurante para ver o menu.
+            </div>
+            <div id="menu-list" class="menu-list"></div>
+          </article>
+
+          <article class="panel">
+            <h3>Seu carrinho</h3>
+            <div id="cart-list" class="cart-list empty">Carrinho vazio.</div>
+            <div class="cart-summary">
+              <p>Subtotal: <strong id="subtotal-value">R$ 0.00</strong></p>
+              <p>Entrega: <strong id="delivery-value">R$ 0.00</strong></p>
+              <p>Total: <strong id="total-value">R$ 0.00</strong></p>
+            </div>
+            <button id="clear-cart-btn" class="secondary-btn" type="button">
+              Limpar carrinho
+            </button>
+            <button id="checkout-btn" class="primary-btn" type="button">
+              Finalizar pedido
+            </button>
+            <button id="view-order-btn" class="secondary-btn" type="button">
+              Ver pedido
+            </button>
+            <div id="order-status" class="order-status" aria-live="polite"></div>
+            <div id="order-receipt" class="order-receipt"></div>
+            <div class="order-history">
+              <h4>Historique (3 derniers)</h4>
+              <div id="order-history-list" class="order-history-list"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>TchancyTech 2026. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
