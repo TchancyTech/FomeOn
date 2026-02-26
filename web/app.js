@@ -1,5 +1,72 @@
 const API_BASE = '/api';
 
+// Mock data (embedded for static deployment)
+const MOCK_RESTAURANTS = [
+  {
+    id: 1,
+    name: 'Pizza Place',
+    category: 'Pizza',
+    rating: 4.6,
+    deliveryTime: '20-30 min',
+    deliveryFee: 2.5,
+    image: '🍕',
+    offer: 'Entrega gratis na primeira compra!'
+  },
+  {
+    id: 2,
+    name: 'Burger House',
+    category: 'Burgers',
+    rating: 4.4,
+    deliveryTime: '25-35 min',
+    deliveryFee: 1.99,
+    image: '🍔',
+    offer: 'Combo duplo com 20% OFF'
+  },
+  {
+    id: 3,
+    name: 'Sushi Prime',
+    category: 'Sushi',
+    rating: 4.8,
+    deliveryTime: '30-45 min',
+    deliveryFee: 3.5,
+    image: '🍣',
+    offer: 'Temaki grátis acima de R$ 60'
+  },
+  {
+    id: 4,
+    name: 'Pasta Bella',
+    category: 'Massas',
+    rating: 4.5,
+    deliveryTime: '25-40 min',
+    deliveryFee: 2.75,
+    image: '🍝',
+    offer: '2 massas pelo preço de 1 às quartas'
+  }
+];
+
+const MOCK_MENUS = {
+  1: [
+    { id: 101, name: 'Margherita', price: 29.9 },
+    { id: 102, name: 'Calabresa', price: 34.9 },
+    { id: 103, name: 'Quatro Queijos', price: 36.9 }
+  ],
+  2: [
+    { id: 201, name: 'Cheeseburger', price: 19.9 },
+    { id: 202, name: 'Bacon Burger', price: 24.9 },
+    { id: 203, name: 'Batata Frita', price: 12.9 }
+  ],
+  3: [
+    { id: 301, name: 'Combo Sushi 20 peças', price: 54.9 },
+    { id: 302, name: 'Hot Roll', price: 29.9 },
+    { id: 303, name: 'Temaki Salmão', price: 21.9 }
+  ],
+  4: [
+    { id: 401, name: 'Spaghetti Bolonhesa', price: 32.9 },
+    { id: 402, name: 'Fettuccine Alfredo', price: 35.9 },
+    { id: 403, name: 'Lasanha', price: 33.9 }
+  ]
+};
+
 const restaurantsList = document.getElementById('restaurants-list');
 const offersList = document.getElementById('offers-list');
 const searchForm = document.getElementById('search-form');
@@ -17,6 +84,10 @@ const orderStatus = document.getElementById('order-status');
 const viewOrderBtn = document.getElementById('view-order-btn');
 const orderReceipt = document.getElementById('order-receipt');
 const orderHistoryList = document.getElementById('order-history-list');
+const loginBtn = document.querySelector('.login-btn');
+const loginModal = document.getElementById('login-modal');
+const loginModalClose = document.querySelector('.modal-close');
+const loginModalActions = document.querySelectorAll('.modal-actions button');
 
 const ORDER_HISTORY_KEY = 'fomeon_order_history';
 
@@ -122,17 +193,27 @@ function pushOrderToHistory(order) {
 }
 
 async function quoteCart(items) {
-  const response = await fetch(`${API_BASE}/cart/quote`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items })
-  });
-
-  if (!response.ok) {
+  // Calculate quote locally
+  if (!items || items.length === 0) {
     return null;
   }
 
-  return response.json();
+  const restaurantId = items[0].restaurantId;
+  const restaurant = MOCK_RESTAURANTS.find(r => r.id === restaurantId);
+  
+  if (!restaurant) {
+    return null;
+  }
+
+  const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const deliveryFee = restaurant.deliveryFee;
+  const total = subtotal + deliveryFee;
+
+  return {
+    subtotal: subtotal.toFixed(2),
+    deliveryFee: deliveryFee.toFixed(2),
+    total: total.toFixed(2)
+  };
 }
 
 function formatFee(value) {
@@ -184,6 +265,44 @@ function renderRestaurants(restaurants) {
     )
     .join('');
 }
+
+function openLoginModal() {
+  loginModal.setAttribute('aria-hidden', 'false');
+  loginModal.classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLoginModal() {
+  loginModal.setAttribute('aria-hidden', 'true');
+  loginModal.classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+  loginBtn?.addEventListener('click', openLoginModal);
+  loginModalClose?.addEventListener('click', closeLoginModal);
+
+  loginModal?.addEventListener('click', (event) => {
+    if (event.target === loginModal) {
+      closeLoginModal();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && loginModal?.classList.contains('visible')) {
+      closeLoginModal();
+    }
+  });
+
+  loginModalActions.forEach((button) => {
+    button.addEventListener('click', () => {
+      const role = button.getAttribute('data-role');
+      const action = button.getAttribute('data-action');
+      const actionText = action === 'login' ? 'Entrar' : 'Criar conta';
+      const roleText = role === 'restaurant' ? 'Restaurante' : 'Cliente';
+      alert(`${actionText} como ${roleText} (mock).`);
+      closeLoginModal();
+    });
+  });
 
 function renderOffers(offers) {
   offersList.innerHTML = offers
@@ -292,13 +411,8 @@ async function updateCartSummary() {
 async function fetchMenu(restaurantId) {
   menuList.innerHTML = '<div class="empty">Carregando menu...</div>';
 
-  const response = await fetch(`${API_BASE}/restaurants/${restaurantId}/menu`);
-  if (!response.ok) {
-    menuList.innerHTML = '<div class="empty">Erro ao carregar menu.</div>';
-    return;
-  }
-
-  const menu = await response.json();
+  // Use local mock menu data
+  const menu = MOCK_MENUS[restaurantId] || [];
   renderMenu(menu);
 }
 
@@ -339,35 +453,38 @@ function updateItemQuantity(menuId, action) {
 }
 
 async function fetchRestaurants() {
-  const params = new URLSearchParams();
-  if (currentSearch) params.set('search', currentSearch);
-  if (currentSort) params.set('sort', currentSort);
+  // Use local mock data instead of API
+  let filtered = MOCK_RESTAURANTS.filter((restaurant) => {
+    const matchesSearch =
+      !currentSearch ||
+      restaurant.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+      restaurant.category.toLowerCase().includes(currentSearch.toLowerCase());
+    return matchesSearch;
+  });
 
-  const response = await fetch(`${API_BASE}/restaurants?${params.toString()}`);
-  if (!response.ok) {
-    restaurantsList.innerHTML = '<div class="empty">Erro ao carregar restaurantes.</div>';
-    return;
+  // Apply sorting
+  if (currentSort === 'rating_desc') {
+    filtered = filtered.sort((a, b) => b.rating - a.rating);
+  } else if (currentSort === 'delivery_fee_asc') {
+    filtered = filtered.sort((a, b) => a.deliveryFee - b.deliveryFee);
   }
 
-  const data = await response.json();
-  currentRestaurants = data;
+  currentRestaurants = filtered;
 
   if (selectedRestaurant) {
     selectedRestaurant = currentRestaurants.find((item) => item.id === selectedRestaurant.id) || null;
   }
 
-  renderRestaurants(data);
+  renderRestaurants(filtered);
 }
 
 async function fetchOffers() {
-  const response = await fetch(`${API_BASE}/offers`);
-  if (!response.ok) {
-    offersList.innerHTML = '<div class="empty">Erro ao carregar ofertas.</div>';
-    return;
-  }
-
-  const data = await response.json();
-  renderOffers(data);
+  // Use offers from mock restaurants
+  const offers = MOCK_RESTAURANTS.filter(r => r.offer).map(r => ({
+    restaurantName: r.name,
+    text: r.offer
+  }));
+  renderOffers(offers);
 }
 
 searchForm.addEventListener('submit', (event) => {
@@ -445,21 +562,15 @@ checkoutBtn.addEventListener('click', async () => {
   checkoutBtn.disabled = true;
 
   try {
-    const response = await fetch(`${API_BASE}/orders`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ restaurantId, items: cartItems })
-    });
+    // Create mock order locally
+    const orderId = `ORD${Date.now()}`;
+    const now = new Date();
+    const deliveryTime = new Date(now.getTime() + 30 * 60000); // 30 minutes from now
+    const estimatedDelivery = deliveryTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-    if (!response.ok) {
-      setOrderStatus('Erro ao finalizar pedido. Tente novamente.', 'error');
-      return;
-    }
-
-    const order = await response.json();
     lastOrder = {
-      id: order.id,
-      estimatedDelivery: order.estimatedDelivery,
+      id: orderId,
+      estimatedDelivery: estimatedDelivery,
       restaurantId,
       restaurantName: findRestaurantName(restaurantId),
       items: itemsSnapshot,
@@ -468,7 +579,7 @@ checkoutBtn.addEventListener('click', async () => {
     pushOrderToHistory(lastOrder);
 
     setOrderStatus(
-      `Pedido ${order.id} criado com sucesso. Entrega estimada: ${order.estimatedDelivery}.`,
+      `Pedido ${orderId} criado com sucesso. Entrega estimada: ${estimatedDelivery}.`,
       'success'
     );
 

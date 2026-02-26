@@ -30,9 +30,37 @@
           <a href="#">Club FomeOn 👑</a>
         </nav>
 
-        <button class="login-btn">entrar</button>
+        <button class="login-btn" type="button">Entrar</button>
       </div>
     </header>
+
+    <div id="login-modal" class="modal-overlay" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+        <button class="modal-close" type="button" aria-label="Fechar">×</button>
+        <h3 id="login-modal-title">Entrar ou criar conta</h3>
+        <p class="modal-desc">Escolha seu perfil para continuar.</p>
+
+        <div class="modal-options">
+          <article class="modal-card" data-role="customer">
+            <h4>Cliente</h4>
+            <p>Peça refeições rápidas dos seus restaurantes favoritos.</p>
+            <div class="modal-actions">
+              <button class="primary-btn" data-action="login" data-role="customer">Entrar</button>
+              <button class="secondary-btn" data-action="signup" data-role="customer">Criar conta</button>
+            </div>
+          </article>
+
+          <article class="modal-card" data-role="restaurant">
+            <h4>Restaurante</h4>
+            <p>Cadastre seu restaurante e receba novos pedidos.</p>
+            <div class="modal-actions">
+              <button class="primary-btn" data-action="login" data-role="restaurant">Entrar</button>
+              <button class="secondary-btn" data-action="signup" data-role="restaurant">Criar conta</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
 
     <main>
       <section class="hero">
